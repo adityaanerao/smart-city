@@ -1,5 +1,5 @@
 // Set your live backend URL here after deploying to Render/Railway
-window.BACKEND_URL = "http://10.70.80.81:5001";
+window.BACKEND_URL = "https://smart-city-3akr.onrender.com";
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Smart City application loaded.");
