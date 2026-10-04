@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Analysis | Smart City</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/modern-dashboard.css">
+    <link rel="stylesheet" href="css/analysis.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        #siteMap {
+            height: 450px;
+            width: 100%;
+            border-radius: 15px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .map-info {
+            margin-top: 15px;
+            color: var(--muted);
+        }
+
+        .module-divider {
+            margin: 40px 0 20px;
+            border: 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat-grid-6 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .mini-stat-card {
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .mini-stat-icon {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+        }
+
+        .mini-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .mini-stat-label {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">✨</div>
+            <span>Smart City</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="index.html"><span class="icon">📊</span> Dashboard</a></li>
+            <li><a href="site-setup.html"><span class="icon">🏗️</span> Site Setup</a></li>
+            <li><a href="analysis.html" class="active"><span class="icon">🧠</span> Analysis</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="status-indicator">
+                <span class="dot pulse"></span>
+                <span>Systems Online</span>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Analysis Page -->
+    <main class="main-content">
+        <div class="container" style="display: flex; flex-direction: column; gap: 24px; max-width: 1400px; margin: 0 auto;">
+
+            <!-- Header -->
+            <div class="setup-header">
+                <h1 class="page-title">
+                    🧠 Site Analysis & Planning Dashboard
+                </h1>
+                <p class="page-subtitle">
+                    Integrated Smart City analysis powered by live REST APIs, OpenStreetMap Overpass spatial queries, and Autodesk Forma design models.
+                </p>
+            </div>
+
+            <!-- Current Site -->
+            <div class="card analysis-card">
+                <h3>📍 Current Site Overview</h3>
+                <div class="grid grid-3" style="padding: 15px 0 0 0;">
+                    <div>
+                        <p class="analysis-description">Infrastructure</p>
+                        <h3 id="analysisInfrastructure">-</h3>
+                    </div>
+
+                    <div>
+                        <p class="analysis-description">Location</p>
+                        <h3 id="analysisLocation">-</h3>
+                    </div>
+
+                    <div>
+                        <p class="analysis-description">Development Type</p>
+                        <h3 id="analysisDevelopment">-</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Site Metrics -->
+            <div class="grid grid-3" style="padding: 0 0 20px 0;">
+                <div class="card analysis-card">
+                    <p class="analysis-description">Site Area</p>
+                    <div class="analysis-value" id="analysisArea">-</div>
+                </div>
+
+                <div class="card analysis-card">
+                    <p class="analysis-description">Expected Users</p>
+                    <div class="analysis-value" id="analysisPopulation">-</div>
+                </div>
+
+                <div class="card analysis-card">
+                    <p class="analysis-description">Green Space Target</p>
+                    <div class="analysis-value" id="greenTarget">-</div>
+                </div>
+            </div>
+
+            <!-- Planning Requirements -->
+            <div class="card analysis-card">
+                <h3>🏗️ Planning Requirements</h3>
+                <div id="requirements" style="margin-top: 15px;">
+                    <!-- Filled by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Risk -->
+            <div class="card analysis-card">
+                <h3>🚨 Initial Risk Considerations</h3>
+                <div class="risk-box risk-medium">
+                    <strong>Preliminary Assessment</strong>
+                    <p id="riskText">
+                        Site-specific environmental and disaster risk simulations are evaluated dynamically below using local terrain and infrastructure parameters.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="card analysis-card">
+                <h3>💡 Planning Recommendations</h3>
+                <div id="recommendations" style="margin-top: 15px;">
+                    <!-- Filled by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Map & Nearby Infrastructure -->
+            <div class="card analysis-card">
+                <h3>🗺️ Surrounding Area Analysis (OpenStreetMap)</h3>
+                <p class="analysis-description">
+                    Interactive geographic visualization centered on the site coordinates.
+                </p>
+
+                <div id="siteMap"></div>
+
+                <div class="card analysis-card" style="margin-top: 20px; background: var(--surface-soft);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>📊 Nearby Infrastructure (Live API)</h3>
+                        <span class="tag">GET /api/infrastructure</span>
+                    </div>
+
+                    <div id="nearbyInfrastructure" style="margin-top: 10px;">
+                        <p>🔍 Analyzing the surrounding area...</p>
+                    </div>
+                </div>
+
+                <p class="map-info">
+                    📍 Centered on Pune coordinates (18.5204° N, 73.8567° E). Real surrounding infrastructure retrieved live from OpenStreetMap Overpass API.
+                </p>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- MODULE: SURROUNDING ENVIRONMENT                           -->
+            <!-- ========================================================= -->
+            <div class="card analysis-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h3>🌍 Comprehensive Surrounding Environment Survey</h3>
+                        <p class="analysis-description">Live Overpass scan across 2000m radius for civic, natural, transit, and road corridors.</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <span id="envStatus"><span class="status-indicator loading">🔍 Surveying environment...</span></span>
+                        <button type="button" id="btnRefreshEnvironment" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;">🔄 Refresh Scan</button>
+                    </div>
+                </div>
+
+                <div class="stat-grid-6">
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-icon">🏫</div>
+                        <div class="mini-stat-value" id="schoolCount">-</div>
+                        <div class="mini-stat-label">Schools</div>
+                    </div>
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-icon">🏥</div>
+                        <div class="mini-stat-value" id="hospitalCount">-</div>
+                        <div class="mini-stat-label">Hospitals</div>
+                    </div>
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-icon">🌳</div>
+                        <div class="mini-stat-value" id="parkCount">-</div>
+                        <div class="mini-stat-label">Parks & Green</div>
+                    </div>
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-icon">🛣️</div>
+                        <div class="mini-stat-value" id="roadCount">-</div>
+                        <div class="mini-stat-label">Arterial Roads</div>
+                    </div>
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-icon">💧</div>
+                        <div class="mini-stat-value" id="waterBodyCount">-</div>
+                        <div class="mini-stat-label">Water Bodies</div>
+                    </div>
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-icon">🚌</div>
+                        <div class="mini-stat-value" id="transportCount">-</div>
+                        <div class="mini-stat-label">Transit Hubs</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <h4 style="font-size: 0.95rem; margin-bottom: 8px;">Environmental Observations & Spatial Insights:</h4>
+                    <div id="envObservationsList">
+                        <!-- Filled by environment.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- MODULE: INFRASTRUCTURE COST ESTIMATOR                     -->
+            <!-- ========================================================= -->
+            <div class="card analysis-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <h3>💰 Infrastructure Cost Estimator</h3>
+                        <p class="analysis-description">Estimate, validate, and break down project expenditure through backend cost services.</p>
+                    </div>
+                    <span class="tag">POST /api/cost</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group-sm">
+                        <label for="roadCost">🛣️ Road Network Cost (₹)</label>
+                        <input type="number" id="roadCost" class="form-control" value="1500100" min="0" step="50010">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="buildingCost">🏢 Building & Civil Cost (₹)</label>
+                        <input type="number" id="buildingCost" class="form-control" value="5001000" min="0" step="100000">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="waterCost">💧 Water Supply Cost (₹)</label>
+                        <input type="number" id="waterCost" class="form-control" value="800000" min="0" step="25001">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="electricalCost">⚡ Electrical & Grid Cost (₹)</label>
+                        <input type="number" id="electricalCost" class="form-control" value="1200000" min="0" step="50010">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="drainageCost">🚰 Drainage & Sewage Cost (₹)</label>
+                        <input type="number" id="drainageCost" class="form-control" value="600000" min="0" step="25001">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="greenCost">🌳 Green Space & Landscaping (₹)</label>
+                        <input type="number" id="greenCost" class="form-control" value="400000" min="0" step="20000">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 15px;">
+                    <button type="button" id="btnCalculateCost" class="btn btn-primary">
+                        💵 Calculate & Validate Cost
+                    </button>
+                    <div id="costStatus"></div>
+                </div>
+
+                <div id="costError" class="alert alert-danger" style="display: none; margin-top: 12px;"></div>
+
+                <div style="margin-top: 20px; padding: 18px; background: var(--surface-soft); border-radius: 14px; border: 1px solid var(--border);">
+                    <p class="analysis-description" style="margin: 0;">Total Estimated Infrastructure Cost</p>
+                    <div class="analysis-value" id="totalCost" style="font-size: 2.2rem; margin-top: 4px;">₹ 95,00,000</div>
+                    <div id="costBreakdown"></div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- MODULE: GREEN CITY PLANNER                                -->
+            <!-- ========================================================= -->
+            <div class="card analysis-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <h3>🌱 Green City & Sustainability Planner</h3>
+                        <p class="analysis-description">Calculate sustainability quotient, CO₂ absorption capacity, and urban ecology benefits.</p>
+                    </div>
+                    <span class="tag">POST /api/green-city</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group-sm">
+                        <label for="greenAreaInput">🌿 Green Area (Acres)</label>
+                        <input type="number" id="greenAreaInput" class="form-control" value="1.5" min="0" step="0.1">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="totalAreaInput">📐 Total Site Area (Acres)</label>
+                        <input type="number" id="totalAreaInput" class="form-control" value="5.0" min="0.1" step="0.1">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="treesInput">🌲 Planned Trees Count</label>
+                        <input type="number" id="treesInput" class="form-control" value="80" min="0">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="solarInput">☀️ Solar Offset Target (%)</label>
+                        <input type="number" id="solarInput" class="form-control" value="30" min="0" max="100">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 20px; margin: 12px 0; flex-wrap: wrap; font-size: 0.9rem;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="waterSavingInput" checked style="width: auto;">
+                        💧 Rainwater Harvesting & Bioswales
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="wasteManagementInput" checked style="width: auto;">
+                        ♻️ Decentralized Solid Waste Management
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 15px;">
+                    <button type="button" id="btnCalculateGreen" class="btn btn-primary">
+                        🌱 Evaluate Sustainability
+                    </button>
+                    <div id="greenStatus"></div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 18px; background: var(--surface-soft); border-radius: 14px; border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <div>
+                            <p class="analysis-description" style="margin: 0;">Green City Sustainability Score</p>
+                            <div class="analysis-value" id="greenScore" style="margin-top: 4px;">30.0%</div>
+                        </div>
+                        <div id="greenPercentage" style="font-weight: 600; color: var(--sage-dark);">30.0% Site Coverage</div>
+                    </div>
+
+                    <div class="progress" style="margin-top: 10px; height: 12px;">
+                        <div class="progress-bar" id="greenProgress" style="width: 30%;"></div>
+                    </div>
+
+                    <div id="environmentalBenefits" style="margin-top: 15px;">
+                        <!-- Filled by green-city.js -->
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 8px;">Actionable Ecological Recommendations:</h4>
+                        <div id="greenRecommendationsList">
+                            <!-- Filled by green-city.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- MODULE: DISASTER MANAGEMENT                               -->
+            <!-- ========================================================= -->
+            <div class="card analysis-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <h3>🚨 Disaster Management & Risk Simulation</h3>
+                        <p class="analysis-description">Prototype multi-hazard simulation evaluating urban vulnerability and emergency readiness.</p>
+                    </div>
+                    <span class="tag">POST /api/disaster</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group-sm">
+                        <label for="floodRisk">🌊 Flood Risk Vulnerability (0 - 100)</label>
+                        <input type="number" id="floodRisk" class="form-control" value="30" min="0" max="100">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="fireRisk">🔥 Fire Incident Risk (0 - 100)</label>
+                        <input type="number" id="fireRisk" class="form-control" value="25" min="0" max="100">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="emergencyAccess">🚑 Emergency Vehicle Accessibility (0 - 100)</label>
+                        <input type="number" id="emergencyAccess" class="form-control" value="80" min="0" max="100">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 15px;">
+                    <button type="button" id="btnCalculateDisaster" class="btn btn-primary">
+                        🛡️ Run Hazard Simulation
+                    </button>
+                    <div id="disasterStatus"></div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 18px; background: var(--surface-soft); border-radius: 14px; border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <p class="analysis-description" style="margin: 0;">Synthesized Risk Level</p>
+                            <span id="riskLevel" class="status status-good" style="font-size: 1.1rem; padding: 6px 16px; margin-top: 6px;">LOW</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <p class="analysis-description" style="margin: 0;">Risk Score</p>
+                            <div id="disasterScoreValue" style="font-size: 1.5rem; font-weight: 700; color: var(--text);">27.5 / 100</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 6px;">Identified Hazards:</h4>
+                        <div id="disasterHazardList"></div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 6px;">Recommended Disaster Mitigation Measures:</h4>
+                        <div id="disasterMitigationList"></div>
+                    </div>
+
+                    <p id="disasterSimulationNotice" style="margin-top: 10px; font-size: 0.8rem; color: var(--muted); font-style: italic;">
+                        * Simulation estimates for student Smart City planning prototype.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- MODULE: IMPACT ANALYSIS                                   -->
+            <!-- ========================================================= -->
+            <div class="card analysis-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <h3>📈 Comprehensive Impact Analysis</h3>
+                        <p class="analysis-description">Multi-criteria impact synthesis across environmental, vehicular, and civic dimensions.</p>
+                    </div>
+                    <span class="tag">POST /api/impact</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group-sm">
+                        <label for="inputEnvImpact">🌿 Environmental Impact (0 - 100)</label>
+                        <input type="number" id="inputEnvImpact" class="form-control" value="70" min="0" max="100">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="inputTrafficImpact">🚗 Traffic & Mobility Impact (0 - 100)</label>
+                        <input type="number" id="inputTrafficImpact" class="form-control" value="60" min="0" max="100">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="inputInfraImpact">🏗️ Infrastructure Compatibility (0 - 100)</label>
+                        <input type="number" id="inputInfraImpact" class="form-control" value="75" min="0" max="100">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="inputDisasterImpact">🚨 Disaster Resilience (0 - 100)</label>
+                        <input type="number" id="inputDisasterImpact" class="form-control" value="45" min="0" max="100">
+                    </div>
+                    <div class="form-group-sm">
+                        <label for="inputSustainImpact">♻️ Long-term Sustainability (0 - 100)</label>
+                        <input type="number" id="inputSustainImpact" class="form-control" value="80" min="0" max="100">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 15px;">
+                    <button type="button" id="btnCalculateImpact" class="btn btn-primary">
+                        📊 Evaluate Overall Impact
+                    </button>
+                    <div id="impactStatus"></div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 18px; background: var(--surface-soft); border-radius: 14px; border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <p class="analysis-description" style="margin: 0;">Overall Impact Index</p>
+                            <div class="analysis-value" id="impactOverallScore" style="margin-top: 4px;">66.0 / 100</div>
+                        </div>
+                        <span id="impactRatingBadge" class="tag" style="font-size: 0.95rem; padding: 6px 14px;">Optimal Sustainable Balance</span>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label-row">
+                            <span>🌿 Environmental Quality</span>
+                            <span id="environmentBarValue">70%</span>
+                        </div>
+                        <div class="progress"><div class="progress-bar" id="environmentBar" style="width: 70%; background: var(--sage);"></div></div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label-row">
+                            <span>🚗 Traffic Flow & Mobility</span>
+                            <span id="trafficBarValue">60%</span>
+                        </div>
+                        <div class="progress"><div class="progress-bar" id="trafficBar" style="width: 60%; background: var(--blue);"></div></div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label-row">
+                            <span>🏗️ Infrastructure Utility</span>
+                            <span id="infrastructureBarValue">75%</span>
+                        </div>
+                        <div class="progress"><div class="progress-bar" id="infrastructureBar" style="width: 75%; background: var(--lavender);"></div></div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label-row">
+                            <span>🚨 Disaster Safety</span>
+                            <span id="disasterBarValue">45%</span>
+                        </div>
+                        <div class="progress"><div class="progress-bar" id="disasterBar" style="width: 45%; background: var(--peach);"></div></div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label-row">
+                            <span>♻️ Ecological Sustainability</span>
+                            <span id="sustainabilityBarValue">80%</span>
+                        </div>
+                        <div class="progress"><div class="progress-bar" id="sustainabilityBar" style="width: 80%; background: var(--yellow);"></div></div>
+                    </div>
+
+                    <div style="margin-top: 15px; padding: 12px 16px; background: white; border-radius: 10px; border: 1px solid var(--border);">
+                        <strong>Executive Impact Summary:</strong>
+                        <p id="impactSummaryText" style="margin-top: 5px; font-size: 0.95rem; color: var(--text);">
+                            The proposed site configuration exhibits balanced sustainability and robust infrastructure compatibility with manageable environmental footprint.
+                        </p>
+                    </div>
+
+                    <p id="impactSimulationNotice" style="margin-top: 8px; font-size: 0.8rem; color: var(--muted); font-style: italic;">
+                        * Simulated engineering planning estimates for student Smart City design prototype.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- MODULE: AUTODESK FORMA INTEGRATION                        -->
+            <!-- ========================================================= -->
+            <div class="card analysis-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                    <div>
+                        <h3>📐 Autodesk Forma Integration Layer</h3>
+                        <p class="analysis-description">Connect site design geometries and environmental analyses directly from Autodesk Forma / APS.</p>
+                    </div>
+                    <span id="formaStatusBadge">
+                        <span class="status-badge status-warning">⏳ Checking Autodesk Forma integration...</span>
+                    </span>
+                </div>
+
+                <div class="form-row" style="margin-top: 10px;">
+                    <div class="form-group-sm">
+                        <label for="formaProjectId">Autodesk Forma Project ID</label>
+                        <input type="text" id="formaProjectId" class="form-control" value="AUTODESK-FORMA-PUNE-01" placeholder="e.g. prj_xyz123">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 10px;">
+                    <button type="button" id="btnFormaSync" class="btn btn-secondary">
+                        📡 Query Autodesk Forma API
+                    </button>
+                    <div id="formaSyncResult"></div>
+                </div>
+
+                <div id="formaInstructions">
+                    <!-- Filled by forma-api.js with clear configuration instructions -->
+                </div>
+            </div>
+
+            <!-- Surrounding Infrastructure Cards Section -->
+            <section class="analysis-section" style="padding: 0; margin-top: 25px;">
+                <div class="section-header">
+                    <h2>🏙️ Surrounding Infrastructure Analysis</h2>
+                    <p>Evaluate important infrastructure and accessibility factors around the selected site.</p>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">🛣️</div>
+                        <h3>Road Accessibility</h3>
+                        <div class="analysis-status good">Good</div>
+                        <p>The site should have suitable access to major roads and internal routes.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">🏥</div>
+                        <h3>Healthcare Access</h3>
+                        <div class="analysis-status moderate">Moderate</div>
+                        <p>Nearby healthcare facilities should be considered for accessibility and emergency planning.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">🏫</div>
+                        <h3>Educational Facilities</h3>
+                        <div class="analysis-status good">Good</div>
+                        <p>Educational facilities in the surrounding area can influence accessibility and planning needs.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">🚌</div>
+                        <h3>Public Transport</h3>
+                        <div class="analysis-status good">Good</div>
+                        <p>Public transportation access can improve connectivity and reduce dependence on private vehicles.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">🌳</div>
+                        <h3>Green Spaces</h3>
+                        <div class="analysis-status needs-improvement">Needs Improvement</div>
+                        <p>Parks, trees and open spaces should be considered to improve environmental quality.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">💧</div>
+                        <h3>Water & Drainage</h3>
+                        <div class="analysis-status moderate">Moderate</div>
+                        <p>Water availability and drainage infrastructure are important for sustainable development.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">🚨</div>
+                        <h3>Emergency Access</h3>
+                        <div class="analysis-status good">Good</div>
+                        <p>Emergency routes should remain accessible for ambulances, fire services and other responders.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">⚡</div>
+                        <h3>Utilities</h3>
+                        <div class="analysis-status moderate">Moderate</div>
+                        <p>Electricity, water, waste management and other essential utilities should be evaluated.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Environmental & Green-Space Analysis Cards Section -->
+            <section class="analysis-section" style="padding: 0; margin-top: 35px;">
+                <div class="section-header">
+                    <h2>🌱 Environmental & Green-Space Analysis</h2>
+                    <p>Evaluate environmental conditions and sustainability requirements for the selected site.</p>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">🌳</div>
+                        <h3>Green Space</h3>
+                        <div class="analysis-status needs-improvement">Needs Improvement</div>
+                        <p>Green and open areas should be incorporated into the site plan.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">🌿</div>
+                        <h3>Open Space</h3>
+                        <div class="analysis-status moderate">Moderate</div>
+                        <p>Adequate open space can improve environmental quality and user comfort.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">💧</div>
+                        <h3>Water Environment</h3>
+                        <div class="analysis-status good">Good</div>
+                        <p>Water management and drainage should be considered during site development.</p>
+                    </div>
+
+                    <div class="card infrastructure-analysis-card">
+                        <div class="analysis-icon">♻️</div>
+                        <h3>Sustainability</h3>
+                        <div class="analysis-status good">Good</div>
+                        <p>Sustainable planning can reduce environmental impact and improve resource efficiency.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+            <footer class="app-footer">
+            <p>Smart City Planning & Analysis © <span id="currentYear"></span></p>
+        </footer>
+    </main>
+
+    <!-- Footer -->
+    
+
+    <!-- JavaScript Dependencies -->
+    <script src="js/main.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/infrastructure.js"></script>
+    <script src="js/environment.js"></script>
+    <script src="js/cost-estimator.js"></script>
+    <script src="js/green-city.js"></script>
+    <script src="js/disaster.js"></script>
+    <script src="js/impact.js"></script>
+    <script src="js/forma-api.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeMap(18.5204, 73.8567);
+            loadAnalysis();
+        });
+
+        function loadAnalysis() {
+            let savedData = localStorage.getItem("smartCitySite");
+
+            // If no data saved yet, initialize default sample site to ensure seamless viewing
+            if (!savedData) {
+                const defaultSite = {
+                    infrastructure: "Hospital",
+                    location: "Pune, Maharashtra",
+                    siteArea: 5,
+                    population: 5001,
+                    developmentType: "new",
+                    description: "Smart City healthcare development prototype."
+                };
+                localStorage.setItem("smartCitySite", JSON.stringify(defaultSite));
+                savedData = JSON.stringify(defaultSite);
+            }
+
+            const data = JSON.parse(savedData);
+
+            const infrastructure = data.infrastructure || "Hospital";
+            const location = data.location || "Pune, Maharashtra";
+            const area = Number(data.siteArea) || 5;
+            const population = Number(data.population) || 5001;
+            const development = data.developmentType === "new"
+                ? "New Development"
+                : "Existing Site Improvement";
+
+            // Basic information
+            setText("analysisInfrastructure", infrastructure);
+            setText("analysisLocation", location);
+            setText("analysisDevelopment", development);
+            setText("analysisArea", `${area} Acres`);
+            setText("analysisPopulation", population ? population.toLocaleString("en-IN") : "Not specified");
+
+            // Green space
+            const greenArea = area * 0.25;
+            setText("greenTarget", `${greenArea.toFixed(2)} Acres`);
+
+            // Sync total area input in Green City module if default present
+            const totalAreaInput = document.getElementById("totalAreaInput");
+            if (totalAreaInput && !totalAreaInput.value) {
+                totalAreaInput.value = area;
+            }
+
+            // Requirements
+            createRequirements(infrastructure, population);
+
+            // Recommendations
+            createRecommendations(infrastructure);
+        }
+
+        function createRequirements(infrastructure, population) {
+            const container = document.getElementById("requirements");
+            if (!container) return;
+            container.innerHTML = "";
+
+            let requirements = [];
+
+            if (infrastructure === "Hospital") {
+                requirements = [
+                    "🚑 Dedicated emergency vehicle access",
+                    "🚗 Adequate parking and drop-off space",
+                    "💧 Reliable water supply and drainage",
+                    "⚡ Reliable electrical power and backup",
+                    "🌳 Green/open space around the facility"
+                ];
+            } else if (infrastructure === "School") {
+                requirements = [
+                    "🚌 Safe student drop-off and pickup area",
+                    "🚸 Pedestrian-friendly access",
+                    "🏃 Open recreational space",
+                    "💧 Adequate sanitation and water facilities",
+                    "🌳 Green and shaded areas"
+                ];
+            } else if (infrastructure === "Residential") {
+                requirements = [
+                    "🛣️ Internal road connectivity",
+                    "🚰 Water supply and sewage infrastructure",
+                    "🗑️ Waste management facilities",
+                    "🌳 Open and recreational spaces",
+                    "🚒 Emergency vehicle accessibility"
+                ];
+            } else if (infrastructure === "Commercial") {
+                requirements = [
+                    "🚗 Customer and staff parking",
+                    "🛣️ Good road accessibility",
+                    "🚌 Public transport connectivity",
+                    "⚡ Reliable electrical infrastructure",
+                    "🚨 Emergency access and safety"
+                ];
+            }
+
+            requirements.forEach(req => {
+                const div = document.createElement("div");
+                div.className = "recommendation";
+                div.textContent = req;
+                container.appendChild(div);
+            });
+        }
+
+        function createRecommendations(infrastructure) {
+            const container = document.getElementById("recommendations");
+            if (!container) return;
+            container.innerHTML = "";
+
+            const recommendations = [
+                "Evaluate accessibility from major roads.",
+                "Maintain sufficient green/open space.",
+                "Review drainage and water-management requirements.",
+                "Consider emergency access while planning the site.",
+                `Apply planning requirements specific to the selected ${infrastructure.toLowerCase()} infrastructure.`
+            ];
+
+            recommendations.forEach(rec => {
+                const div = document.createElement("div");
+                div.className = "recommendation";
+                div.textContent = rec;
+                container.appendChild(div);
+            });
+        }
+
+        function setText(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+    </script>
+</body>
+</html>

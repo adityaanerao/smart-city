@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart City | Command Center</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/modern-dashboard.css">
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">✨</div>
+            <span>Smart City</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="index.html" class="active"><span class="icon">📊</span> Dashboard</a></li>
+            <li><a href="site-setup.html"><span class="icon">🏗️</span> Site Setup</a></li>
+            <li><a href="analysis.html"><span class="icon">🧠</span> Analysis</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="status-indicator">
+                <span class="dot pulse"></span>
+                <span>Systems Online</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div>
+                <h1 class="page-title">Command Center</h1>
+                <p class="page-subtitle">Real-time infrastructure and geospatial analytics</p>
+            </div>
+            <div class="topbar-actions">
+                <a href="site-setup.html" class="btn btn-primary">
+                    <span>+</span> New Project
+                </a>
+            </div>
+        </header>
+
+        <!-- Bento Grid Dashboard -->
+        <div class="bento-grid">
+            
+            <!-- Hero / Active Site (Spans 2 columns) -->
+            <div class="bento-card col-span-2 gradient-bg hero-card">
+                <div class="hero-content">
+                    <div class="badge glass-badge">Active Site</div>
+                    <h2 id="siteLocation" class="hero-title">Pune, Maharashtra</h2>
+                    <div class="hero-stats">
+                        <div class="stat-pill">
+                            <span class="label">Type</span>
+                            <span class="val" id="infrastructureType">Hospital</span>
+                        </div>
+                        <div class="stat-pill">
+                            <span class="label">Area</span>
+                            <span class="val" id="siteArea">5 Acres</span>
+                        </div>
+                        <div class="stat-pill">
+                            <span class="label">Population</span>
+                            <span class="val" id="population">5,000</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-overlay"></div>
+            </div>
+
+            <!-- Overpass API Status -->
+            <div class="bento-card col-span-2">
+                <div class="card-header">
+                    <h3>Spatial Survey</h3>
+                    <div class="api-tag">Live</div>
+                </div>
+                <p class="text-muted">Live civic asset scan within a 2,000m radius using Overpass API.</p>
+                <div class="live-metrics" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
+                    <div class="metric-row">
+                        <span class="m-icon">🚌</span>
+                        <span class="m-label">Bus Stations</span>
+                        <span class="m-val" id="busStations">Loading...</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="m-icon">🏥</span>
+                        <span class="m-label">Hospitals</span>
+                        <span class="m-val" id="hospitals">Loading...</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="m-icon">🌳</span>
+                        <span class="m-label">Parks</span>
+                        <span class="m-val" id="parks">Loading...</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="m-icon">🏫</span>
+                        <span class="m-label">Schools</span>
+                        <span class="m-val" id="schools">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost Estimator -->
+            <a href="analysis.html#costEstimator" class="bento-card hover-lift module-card">
+                <div class="module-icon">💰</div>
+                <h3>Cost Estimator</h3>
+                <p>Automated multi-discipline infrastructure expenditure calculation.</p>
+                <div class="arrow-link">Estimate Costs <span>→</span></div>
+            </a>
+
+            <!-- Green City Planner -->
+            <a href="analysis.html#greenPlanner" class="bento-card hover-lift module-card">
+                <div class="module-icon">🌱</div>
+                <h3>Green Planner</h3>
+                <p>Ecological impact scoring, canopy estimates, and CO₂ modeling.</p>
+                <div class="arrow-link">Plan Green Space <span>→</span></div>
+            </a>
+
+            <!-- Disaster Simulation -->
+            <a href="analysis.html#disasterSim" class="bento-card hover-lift module-card">
+                <div class="module-icon">🚨</div>
+                <h3>Disaster Sim</h3>
+                <p>Flood, fire, and emergency route bottleneck assessment.</p>
+                <div class="arrow-link">Assess Risks <span>→</span></div>
+            </a>
+
+            <!-- Impact Analysis -->
+            <a href="analysis.html#impactAnalysis" class="bento-card hover-lift module-card">
+                <div class="module-icon">📈</div>
+                <h3>Impact Analysis</h3>
+                <p>Sustainability and infrastructure compatibility modeling.</p>
+                <div class="arrow-link">View Impact <span>→</span></div>
+            </a>
+
+            <!-- Autodesk Forma Layer -->
+            <a href="analysis.html#formaSection" class="bento-card hover-lift module-card col-span-4">
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <div class="module-icon large">📐</div>
+                    <div>
+                        <h3>Autodesk Forma Integration</h3>
+                        <p>Sync architectural designs and site data directly with Autodesk Platform Services (APS) cloud.</p>
+                        <div class="arrow-link" style="margin-top: 10px;">Configure Forma <span>→</span></div>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+            <footer class="app-footer">
+            <p>Smart City Planning & Analysis © <span id="currentYear"></span></p>
+        </footer>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Setup | Smart City</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/modern-dashboard.css">
+
+    <style>
+        .setup-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .required {
+            color: #ef4444; /* Red 500 */
+            margin-left: 4px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        .setup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Infrastructure Picker */
+        .infrastructure-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .infrastructure-option {
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            background: #fff;
+            transition: var(--transition);
+        }
+
+        .infrastructure-option:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .infrastructure-option.selected {
+            border-color: var(--accent-primary);
+            background: #f0f9ff;
+            color: var(--accent-primary-hover);
+            font-weight: 700;
+            box-shadow: inset 0 0 0 1px var(--accent-primary);
+        }
+
+        .infrastructure-option .icon {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .analyze-area {
+            text-align: right;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .analyze-btn {
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .setup-grid, .infrastructure-options {
+                grid-template-columns: 1fr;
+            }
+            .setup-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">✨</div>
+            <span>Smart City</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="index.html"><span class="icon">📊</span> Dashboard</a></li>
+            <li><a href="site-setup.html" class="active"><span class="icon">🏗️</span> Site Setup</a></li>
+            <li><a href="analysis.html"><span class="icon">🧠</span> Analysis</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="status-indicator">
+                <span class="dot pulse"></span>
+                <span>Systems Online</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar" style="margin-bottom: 30px;">
+            <div>
+                <h1 class="page-title">Project Setup</h1>
+                <p class="page-subtitle">Configure infrastructure parameters for your new smart city site.</p>
+            </div>
+        </header>
+
+        <!-- Setup Form Card -->
+        <div class="setup-card">
+            <form id="siteSetupForm">
+                
+                <!-- Infrastructure Picker -->
+                <div class="form-group full-width">
+                    <label>What are you planning? <span class="required">*</span></label>
+                    <div class="infrastructure-options">
+                        <div class="infrastructure-option selected" data-type="Hospital">
+                            <span class="icon">🏥</span>
+                            Hospital
+                        </div>
+                        <div class="infrastructure-option" data-type="School">
+                            <span class="icon">🏫</span>
+                            School
+                        </div>
+                        <div class="infrastructure-option" data-type="Residential">
+                            <span class="icon">🏠</span>
+                            Residential
+                        </div>
+                        <div class="infrastructure-option" data-type="Commercial">
+                            <span class="icon">🏢</span>
+                            Commercial
+                        </div>
+                    </div>
+                    <input type="hidden" id="infrastructureType" value="Hospital">
+                </div>
+
+                <div class="setup-grid">
+                    <!-- Location -->
+                    <div class="form-group">
+                        <label for="location">Location <span class="required">*</span></label>
+                        <input type="text" id="location" class="form-control" placeholder="e.g. Pune, Maharashtra" required>
+                    </div>
+
+                    <!-- Site Area -->
+                    <div class="form-group">
+                        <label for="siteAreaInput">Site Area (Acres) <span class="required">*</span></label>
+                        <input type="number" id="siteAreaInput" class="form-control" placeholder="e.g. 5" min="0" step="0.1" required>
+                    </div>
+
+                    <!-- Expected Population -->
+                    <div class="form-group">
+                        <label for="populationInput">Expected Users / Population</label>
+                        <input type="number" id="populationInput" class="form-control" placeholder="e.g. 5000" min="0">
+                    </div>
+
+                    <!-- Development Type -->
+                    <div class="form-group">
+                        <label for="developmentType">Development Type</label>
+                        <select id="developmentType" class="form-control">
+                            <option value="new">New Development</option>
+                            <option value="existing">Existing Site Improvement</option>
+                        </select>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="form-group full-width">
+                        <label for="description">Additional Information</label>
+                        <textarea id="description" class="form-control" rows="4" placeholder="Describe specific requirements, sustainability goals, or potential roadblocks..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Analyze Button -->
+                <div class="analyze-area">
+                    <button type="submit" class="btn btn-primary analyze-btn">
+                        Start Analysis <span>→</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+            <footer class="app-footer">
+            <p>Smart City Planning & Analysis © <span id="currentYear"></span></p>
+        </footer>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script>
+        // Infrastructure selection logic
+        const options = document.querySelectorAll(".infrastructure-option");
+        const infrastructureInput = document.getElementById("infrastructureType");
+
+        options.forEach(option => {
+            option.addEventListener("click", () => {
+                options.forEach(item => item.classList.remove("selected"));
+                option.classList.add("selected");
+                infrastructureInput.value = option.dataset.type;
+            });
+        });
+
+        // Form submission logic
+        document.getElementById("siteSetupForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const siteData = {
+                infrastructure: infrastructureInput.value,
+                location: document.getElementById("location").value,
+                siteArea: document.getElementById("siteAreaInput").value,
+                population: document.getElementById("populationInput").value,
+                developmentType: document.getElementById("developmentType").value,
+                description: document.getElementById("description").value
+            };
+
+            // Save information temporarily
+            localStorage.setItem("smartCitySite", JSON.stringify(siteData));
+
+            // Go to dashboard (or analysis page)
+            window.location.href = "analysis.html";
+        });
+    </script>
+</body>
+</html>
